@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neat_and_clean_calendar/flutter_neat_and_clean_calendar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker/classes/expense_details.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(MaterialApp(title: 'Expensify', home: LoginPage()));
@@ -47,6 +50,42 @@ class LoginPage extends StatelessWidget {
 }
 
 class MainPage extends StatelessWidget {
+  List<String> res = [];
+  AlertDialog AddTx() {
+    return AlertDialog(
+        content: Stack(children: <Widget>[
+      Positioned(
+        right: -40.0,
+        top: -40.0,
+        child: InkResponse(
+          onTap: () {},
+          child: CircleAvatar(
+            child: Icon(Icons.close),
+            backgroundColor: Colors.red,
+          ),
+        ),
+      ),
+      Form(
+        child: Column(children: <Widget>[
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text('Enter Category:'),
+                  TextFormField(),
+                  Text('Enter Expense:'),
+                  TextFormField(),
+                ],
+              )),
+          Padding(
+            padding: EdgeInsets.all(8.0),
+          ),
+        ]),
+      ),
+    ]));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,8 +97,8 @@ class MainPage extends StatelessWidget {
             flex: 1,
             child: Container(
                 decoration: BoxDecoration(
-                    color: Color(0xFFe0e1dd),
-                    borderRadius: BorderRadius.circular(20)),
+                    color: Color(0xE0e0e1dd),
+                    borderRadius: BorderRadius.circular(10)),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -67,7 +106,7 @@ class MainPage extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 50.0,
                         child: Text('AS'),
-                        backgroundColor: Color(0xFFe0e1dd),
+                        backgroundColor: Color(0xFF0d1b2a),
                       ),
                     ),
                     Container(
@@ -80,52 +119,71 @@ class MainPage extends StatelessWidget {
                   ],
                 )),
           ),
-          Spacer(),
           Expanded(
             flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Color(0xFFe0e1dd),
-                  borderRadius: BorderRadius.circular(20)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Color(0xFF415a77),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Row(children: [
-                      Container(
-                        child: Text('Daily Transactions'),
+            child: Padding(
+              padding: EdgeInsets.only(left: 30.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Color(0xE0e0e1dd),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Row(children: [
+                          Container(
+                            child: Text(
+                              'Daily Transactions',
+                              style: TextStyle(fontSize: 30.0),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 60.0),
+                            child: FloatingActionButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AddTx());
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 40.0,
+                                )),
+                          ),
+                        ]),
                       ),
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 40.0,
-                        color: Colors.white,
-                      ),
-                      FloatingActionButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AddTx());
-                          },
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 40.0,
-                          )),
-                    ]),
-                  ),
-                  Expanded(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('Total Expense'),
-                      Text('Total Income'),
-                      Text('Net'),
-                    ],
-                  ))
-                ],
+                    ),
+                    Expanded(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text('Total Expense'),
+                            Text('Total Income'),
+                            Text('Net'),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text('120'),
+                            Text('120'),
+                            Text('0'),
+                          ],
+                        ),
+                      ],
+                    )),
+                    ListTx(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -135,35 +193,44 @@ class MainPage extends StatelessWidget {
   }
 }
 
-class AddTx extends StatelessWidget {
+class ListTx extends StatelessWidget {
+  List<Expense> tx = [
+    Expense('food', DateTime.now(), 300),
+    Expense('shopping', DateTime.now(), 100),
+    Expense('automobile', DateTime.now(), 100),
+  ];
+
+  Container expIcon(String category) {
+    return Container(
+        child: (category == 'food')
+            ? Icon(Icons.fastfood)
+            : (category == 'shopping')
+                ? Icon(Icons.shopping_cart)
+                : Icon(Icons.directions_car));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-        content: Stack(children: <Widget>[
-      Positioned(
-        right: -40.0,
-        top: -40.0,
-        child: InkResponse(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: CircleAvatar(
-            child: Icon(Icons.close),
-            backgroundColor: Colors.red,
-          ),
-        ),
-      ),
-      Form(
-        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-          ),
-        ]),
-      ),
-    ]));
+    return Expanded(
+        child: ListView.separated(
+            itemBuilder: (BuildContext context, int index) {
+              return Center(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                    Column(
+                      children: [
+                        expIcon(tx[index].category),
+                        Text(DateFormat('dd/MM/yyyy')
+                            .format(tx[index].date)
+                            .toString()),
+                      ],
+                    ),
+                    Text('\$' + tx[index].expense.toString()),
+                  ]));
+            },
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(),
+            itemCount: tx.length));
   }
 }

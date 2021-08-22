@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
+import 'package:expense_tracker/views/MainPage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AddTx extends StatelessWidget {
   Expense expense;
@@ -12,7 +15,7 @@ class AddTx extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController _controller = new TextEditingController();
     TextEditingController _controller1 = new TextEditingController();
-    //TextEditingController _controller2 = new TextEditingController();
+    TextEditingController _controller2 = new TextEditingController();
     return AlertDialog(
         content: Stack(children: <Widget>[
       Positioned(
@@ -35,24 +38,27 @@ class AddTx extends StatelessWidget {
                 children: [
                   Text('Enter Category:'),
                   TextField(controller: _controller, autofocus: true),
-                  Text('Enter Expense:'),
+                  Text('Enter Expense Name:'),
+                  TextField(controller: _controller2),
+                  Text('Enter Amount:'),
                   TextField(controller: _controller1),
                   Text('Enter Date:'),
                   TextButton(
                       onPressed: () async {
                         expense.category = _controller.text;
+                        expense.expName = _controller2.text;
                         int amt = int.parse(_controller1.text);
                         expense.expense = amt;
-                        expense.date = DateTime.now();
-                        print('category:${expense.category}');
-                        print('exp:${expense.expense}');
-                        print(' Date:${expense.date}');
+                        expense.day = 19;
 
-                        await db.collection('Transactions').add({
-                          'Category': expense.category,
-                          'Amount': expense.expense,
-                          'Date': expense.date,
-                        });
+                        await db
+                            .collection('Transactions')
+                            .add(expense.toJson());
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MainPage()),
+                        );
                       },
                       child: Text('Add Expense')),
                 ],

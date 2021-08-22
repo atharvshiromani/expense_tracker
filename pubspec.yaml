@@ -32,6 +32,10 @@ dependencies:
   flutter_neat_and_clean_calendar: ^0.2.0+8
   cloud_firestore: ^2.5.0
   intl: 0.17.0
+  syncfusion_flutter_charts: ^19.2.56
+  http: ^0.13.3
+  firebase_database: ^7.2.0
+  firebase_core: ^1.5.0
 
 dev_dependencies:
   flutter_test:

@@ -4,11 +4,7 @@ import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:intl/intl.dart';
 
 class ListTx extends StatelessWidget {
-  List<Expense> tx = [
-    Expense('food', DateTime.now(), 300),
-    Expense('shopping', DateTime.now(), 100),
-    Expense('automobile', DateTime.now(), 100),
-  ];
+  final db = FirebaseFirestore.instance;
 
   Container expIcon(String category) {
     return Container(
@@ -22,25 +18,40 @@ class ListTx extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: ListView.separated(
-            itemBuilder: (BuildContext context, int index) {
-              return Center(
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                    Column(
-                      children: [
-                        expIcon(tx[index].category),
-                        Text(DateFormat('dd/MM/yyyy')
-                            .format(tx[index].date)
-                            .toString()),
-                      ],
-                    ),
-                    Text('\$' + tx[index].expense.toString()),
-                  ]));
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(),
-            itemCount: tx.length));
+      child: StreamBuilder(
+        stream:
+            FirebaseFirestore.instance.collection('Transactions').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return ListView(
+            children: snapshot.data!.docs.map((document) {
+              return Container(
+                child: Center(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                      Column(
+                        children: [
+                          expIcon(document['Category'].toString()),
+
+                          // Text(DateFormat('dd/MM/yyyy')
+                          //     .format(document['Date'])
+                          //     .toString()),
+                        ],
+                      ),
+                      Text(document['Expense'].toString()),
+                      Text('\$' + document['Amount'].toString()),
+                    ])),
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
   }
 }

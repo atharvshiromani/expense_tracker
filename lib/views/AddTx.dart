@@ -1,15 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:expense_tracker/views/MainPage.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
+import 'package:expense_tracker/classes/expcategory.dart';
 
 class AddTx extends StatelessWidget {
   Expense expense;
-  AddTx({key, required this.expense}) : super(key: key);
+  ExpCategory expcat;
+  AddTx({key, required this.expense, required this.expcat}) : super(key: key);
 
   final db = FirebaseFirestore.instance;
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +46,22 @@ class AddTx extends StatelessWidget {
                   Text('Enter Amount:'),
                   TextField(controller: _controller1),
                   Text('Enter Date:'),
+                  DatePicker(),
                   TextButton(
                       onPressed: () async {
                         expense.category = _controller.text;
+                        expcat.category = _controller.text;
                         expense.expName = _controller2.text;
                         int amt = int.parse(_controller1.text);
                         expense.expense = amt;
-                        expense.day = 19;
+                        expcat.expense = amt;
+                        expense.day = _DatePickerState.selectedDate;
 
                         await db
                             .collection('Transactions')
                             .add(expense.toJson());
+
+                        await db.collection('Category').add(expcat.toJson());
 
                         Navigator.push(
                           context,
@@ -66,5 +74,39 @@ class AddTx extends StatelessWidget {
         ]),
       ),
     ]));
+  }
+}
+
+class DatePicker extends StatefulWidget {
+  const DatePicker({Key? key}) : super(key: key);
+
+  @override
+  _DatePickerState createState() => _DatePickerState();
+}
+
+class _DatePickerState extends State<DatePicker> {
+  static DateTime selectedDate = DateTime.now();
+  _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RaisedButton(
+      onPressed: () => _selectDate(context),
+      child: Text(
+        'Select date',
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+    );
   }
 }

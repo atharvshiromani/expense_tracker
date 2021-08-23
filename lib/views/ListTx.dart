@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:intl/intl.dart';
 
 class ListTx extends StatelessWidget {
   final db = FirebaseFirestore.instance;
-
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   Container expIcon(String category) {
     return Container(
         child: (category == 'food')
@@ -44,6 +43,9 @@ class ListTx extends StatelessWidget {
                           //     .toString()),
                         ],
                       ),
+                      Text(dateFormat
+                          .format(document['Date'].toDate())
+                          .toString()),
                       Text(document['Expense'].toString()),
                       Text('\$' + document['Amount'].toString()),
                     ])),

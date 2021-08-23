@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Expense {
   String category;
   String expName;
-  int day;
+  DateTime day;
   int expense;
 
   Expense(this.category, this.expName, this.day, this.expense);
@@ -12,12 +14,9 @@ class Expense {
         'Date': day,
       };
 
-  factory Expense.fromJson(Map<String, dynamic> parseJson) {
-    return Expense(
-      parseJson['Category'].toString(),
-      parseJson['Expense'],
-      parseJson['Amount'],
-      parseJson['Date'],
-    );
-  }
+  Expense.fromMap(Map<String, dynamic> parseJson)
+      : category = parseJson['Category'].toString(),
+        expName = parseJson['Expense'],
+        expense = parseJson['Amount'],
+        day = (parseJson['Date'] as Timestamp).toDate();
 }

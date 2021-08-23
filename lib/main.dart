@@ -1,47 +1,35 @@
-import 'package:flutter/material.dart';
+import 'package:expense_tracker/views/LoginPage.dart';
 import 'package:expense_tracker/views/MainPage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
-  runApp(MaterialApp(title: 'Expensify', home: LoginPage()));
+import 'package:provider/provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
-class LoginPage extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text('Expensify'),
-        backgroundColor: Colors.red,
-      ),
-      body: Center(
-        child: Container(
-          color: Colors.white,
-          height: 500.00,
-          width: 500.00,
-          child: Column(
-            children: [
-              Container(
-                child: Text('Login Details'),
-              ),
-              Container(
-                child: Text('Email:'),
-              ),
-              Container(
-                child: Text('Password:'),
-              ),
-              ElevatedButton(
-                  child: Text('Login'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainPage()),
-                    );
-                  })
-            ],
-          ),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Expensify',
+      home: AuthWrapper(),
     );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<User?>();
+
+    if (user != null) {
+      return MainPage();
+    }
+    return LoginPage();
   }
 }

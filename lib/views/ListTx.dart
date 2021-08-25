@@ -1,29 +1,49 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-class ListTx extends StatelessWidget {
+class ListTx extends StatefulWidget {
+  @override
+  _ListTxState createState() => _ListTxState();
+}
+
+class _ListTxState extends State<ListTx> {
   final db = FirebaseFirestore.instance;
+  final auth = FirebaseAuth.instance;
+
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+
   Container expIcon(String category) {
     return Container(
         child: (category == 'food')
             ? Icon(Icons.fastfood)
             : (category == 'shopping')
                 ? Icon(Icons.shopping_cart)
-                : Icon(Icons.directions_car));
+                : (category == 'automobile')
+                    ? Icon(Icons.directions_car)
+                    : Icon(Icons.account_balance));
+  }
+
+  Stream<QuerySnapshot> getUserExpense(BuildContext context) async* {
+    final uid = auth.currentUser!.uid;
+    yield* FirebaseFirestore.instance
+        .collection('userTxdata')
+        .doc(uid)
+        .collection('Transactions')
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: StreamBuilder(
-        stream:
-            FirebaseFirestore.instance.collection('Transactions').snapshots(),
+      flex: 1,
+      child: StreamBuilder<QuerySnapshot>(
+        stream: getUserExpense(context),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: Text('No Expenses to Show! Add One to get going :)'),
             );
           }
 
@@ -37,10 +57,6 @@ class ListTx extends StatelessWidget {
                       Column(
                         children: [
                           expIcon(document['Category'].toString()),
-
-                          // Text(DateFormat('dd/MM/yyyy')
-                          //     .format(document['Date'])
-                          //     .toString()),
                         ],
                       ),
                       Text(dateFormat

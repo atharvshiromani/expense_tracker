@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:expense_tracker/views/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +10,7 @@ class ListTx extends StatefulWidget {
 
 class _ListTxState extends State<ListTx> {
   final db = FirebaseFirestore.instance;
-  final auth = FirebaseAuth.instance;
+  final auth = Authenticator();
 
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
 
@@ -25,23 +25,13 @@ class _ListTxState extends State<ListTx> {
                     : Icon(Icons.account_balance));
   }
 
-  Stream<QuerySnapshot> getUserExpense(BuildContext context) async* {
-    final uid = auth.currentUser!.uid;
-    yield* FirebaseFirestore.instance
-        .collection('userTxdata')
-        .doc(uid)
-        .collection('Transactions')
-        .snapshots();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      flex: 1,
       child: StreamBuilder<QuerySnapshot>(
-        stream: getUserExpense(context),
+        stream: auth.fromDB(context, 'Transactions'),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          if (!snapshot.hasData) {
             return Center(
               child: Text('No Expenses to Show! Add One to get going :)'),
             );

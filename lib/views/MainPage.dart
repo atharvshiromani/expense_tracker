@@ -1,12 +1,14 @@
 import 'package:expense_tracker/classes/expcategory.dart';
 import 'package:expense_tracker/views/LoginPage.dart';
+import 'package:expense_tracker/views/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:expense_tracker/views/AddTx.dart';
 import 'package:expense_tracker/views/ListTx.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
+final auth = Authenticator();
 
 class MainPage extends StatefulWidget {
   @override
@@ -14,7 +16,6 @@ class MainPage extends StatefulWidget {
 }
 
 class HomePage extends State<MainPage> {
-  final auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     //print(chartData);
@@ -63,78 +64,75 @@ class HomePage extends State<MainPage> {
                     ])),
           ),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Padding(
               padding: EdgeInsets.only(left: 30.0),
               child: Container(
                 decoration: BoxDecoration(
                     color: Color(0xE0e0e1dd),
                     borderRadius: BorderRadius.circular(10)),
-                child: Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(40.0),
-                          child: Row(children: [
-                            Container(
-                              child: Text(
-                                'Daily Transactions',
-                                style: TextStyle(fontSize: 30.0),
-                              ),
-                            ),
-                            SizedBox(width: 20.0),
-                            FloatingActionButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AddTx(
-                                            expense: newexp,
-                                            expcat: newexpcat,
-                                          ));
-                                },
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 40.0,
-                                )),
-                          ]),
-                        ),
-                      ),
-                      Expanded(
-                          child: Padding(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      child: Padding(
                         padding: const EdgeInsets.all(40.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Total Expense',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 28.0,
-                                )),
-                            TotalExpense(),
-                          ],
-                        ),
-                      )),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text('Category'),
-                            Text('Date'),
-                            Text('Expense'),
-                            Text('Amount'),
-                          ],
-                        ),
+                        child: Row(children: [
+                          Container(
+                            child: Text(
+                              'Daily Transactions',
+                              style: TextStyle(fontSize: 30.0),
+                            ),
+                          ),
+                          SizedBox(width: 20.0),
+                          FloatingActionButton(
+                              key: Key('add1txbutton'),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AddTx(
+                                          key: Key('addtxwidget'),
+                                          expense: newexp,
+                                          expcat: newexpcat,
+                                        ));
+                              },
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 40.0,
+                              )),
+                        ]),
                       ),
-                      ListTx(),
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Total Expense',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 28.0,
+                              )),
+                          TotalExpense(),
+                        ],
+                      ),
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text('Category'),
+                          Text('Date'),
+                          Text('Expense'),
+                          Text('Amount'),
+                        ],
+                      ),
+                    ),
+                    ListTx(),
+                  ],
                 ),
               ),
             ),
@@ -153,21 +151,19 @@ class Chart extends StatefulWidget {
 }
 
 class _ChartState extends State<Chart> {
-  final auth = FirebaseAuth.instance;
-  Stream<QuerySnapshot> getUserExpense(BuildContext context) async* {
-    final uid = auth.currentUser!.uid;
-    yield* FirebaseFirestore.instance
-        .collection('userTxdata')
-        .doc(uid)
-        .collection('Transactions')
-        .snapshots();
+  late TooltipBehavior _tooltipBehavior;
+
+  @override
+  void initState() {
+    _tooltipBehavior = TooltipBehavior(enable: true);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         child: StreamBuilder<QuerySnapshot>(
-      stream: getUserExpense(context),
+      stream: auth.fromDB(context, 'Transactions'),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Widget widget = Container();
         if (snapshot.hasData) {
@@ -183,6 +179,7 @@ class _ChartState extends State<Chart> {
 
           widget = Container(
               child: SfCartesianChart(
+            tooltipBehavior: _tooltipBehavior,
             primaryXAxis: NumericAxis(),
             series: <ChartSeries<Expense, dynamic>>[
               ColumnSeries<Expense, int>(
@@ -206,26 +203,23 @@ class Chart1 extends StatefulWidget {
 }
 
 class _Chart1State extends State<Chart1> {
-  final auth = FirebaseAuth.instance;
+  List<ExpCategory> chartData = <ExpCategory>[];
+  late TooltipBehavior _tooltipBehavior;
 
-  Stream<QuerySnapshot> getUserExpense(BuildContext context) async* {
-    final uid = auth.currentUser!.uid;
-    yield* FirebaseFirestore.instance
-        .collection('userTxdata')
-        .doc(uid)
-        .collection('Category')
-        .snapshots();
+  @override
+  void initState() {
+    _tooltipBehavior = TooltipBehavior(enable: true);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         child: StreamBuilder<void>(
-      stream: getUserExpense(context),
+      stream: auth.fromDB(context, 'Category'),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         Widget widget = Container();
         if (snapshot.hasData) {
-          List<ExpCategory> chartData = <ExpCategory>[];
           for (int index = 0; index < snapshot.data.docs.length; index++) {
             DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
                 snapshot.data.docs[index];
@@ -235,13 +229,34 @@ class _Chart1State extends State<Chart1> {
                 documentSnapshot.data() as Map<String, dynamic>));
           }
 
+          Map map = {};
+          for (var i = 0; i < chartData.length; i++) {
+            ExpCategory exp = chartData[i];
+            map.putIfAbsent(exp.category, () => exp.expense);
+            if (map.containsKey(exp.category)) {
+              map.update(exp.category, (value) => value + exp.expense);
+            }
+          }
+          print(map);
+          List<ExpCategory> list = [];
+          map.forEach((k, v) => list.add(ExpCategory(k, v)));
+
           widget = Container(
               child: SfCircularChart(
+            tooltipBehavior: _tooltipBehavior,
+            legend: Legend(
+              isVisible: true,
+            ),
             series: <CircularSeries<ExpCategory, dynamic>>[
               PieSeries<ExpCategory, String>(
-                  dataSource: chartData,
+                  enableSmartLabels: true,
+                  dataSource: list,
                   xValueMapper: (ExpCategory data, _) => data.category,
-                  yValueMapper: (ExpCategory data, _) => data.expense)
+                  yValueMapper: (ExpCategory data, _) => data.expense,
+                  dataLabelMapper: (ExpCategory data, _) => data.category,
+                  dataLabelSettings: DataLabelSettings(
+                      isVisible: true,
+                      labelPosition: ChartDataLabelPosition.outside))
             ],
           ));
         }
@@ -259,24 +274,13 @@ class TotalExpense extends StatefulWidget {
 }
 
 class _TotalExpenseState extends State<TotalExpense> {
-  final auth = FirebaseAuth.instance;
-
-  Stream<QuerySnapshot> getUserExpense(BuildContext context) async* {
-    final uid = await auth.currentUser!.uid;
-    yield* FirebaseFirestore.instance
-        .collection('userTxdata')
-        .doc(uid)
-        .collection('Category')
-        .snapshots();
-  }
-
   int chartData = 0;
   @override
   Widget build(BuildContext context) {
     return Expanded(
         flex: 1,
         child: StreamBuilder<QuerySnapshot>(
-          stream: getUserExpense(context),
+          stream: auth.fromDB(context, 'Category'),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             Widget widget = Container();
             if (snapshot.hasData) {

@@ -45,6 +45,7 @@ class HomePage extends State<MainPage> {
                         ),
                       ),
                       TextButton(
+                        key: ValueKey('signout'),
                         child: Text('SignOut'),
                         onPressed: () async {
                           auth.signOut();
@@ -86,7 +87,7 @@ class HomePage extends State<MainPage> {
                           ),
                           SizedBox(width: 20.0),
                           FloatingActionButton(
-                              key: Key('add1txbutton'),
+                              key: ValueKey('addtxbutton'),
                               onPressed: () {
                                 showDialog(
                                     context: context,

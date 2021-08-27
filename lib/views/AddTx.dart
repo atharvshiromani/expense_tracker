@@ -26,6 +26,7 @@ class _AddTxState extends State<AddTx> {
     TextEditingController _controller1 = new TextEditingController();
     TextEditingController _controller2 = new TextEditingController();
     return SimpleDialog(
+        key: ValueKey('addtxdialog'),
         title: Center(child: new Text("Add a New Expense")),
         contentPadding: EdgeInsets.all(20.0),
         children: [
@@ -37,17 +38,23 @@ class _AddTxState extends State<AddTx> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Enter Category:'),
-                      TextField(controller: _controller, autofocus: true),
+                      TextFormField(
+                          key: ValueKey('category'),
+                          controller: _controller,
+                          autofocus: true),
                       SizedBox(height: 10),
                       Text('Enter Expense Name:'),
-                      TextField(controller: _controller2),
+                      TextField(
+                          key: ValueKey('expense'), controller: _controller2),
                       SizedBox(height: 10),
                       Text('Enter Amount:'),
-                      TextField(controller: _controller1),
+                      TextFormField(
+                          key: ValueKey('amount'), controller: _controller1),
                       SizedBox(height: 10),
                       Text('Enter Date:'),
                       DatePicker(),
                       TextButton(
+                          key: ValueKey('addexpbutton'),
                           onPressed: () async {
                             int amt = int.parse(_controller1.text);
 

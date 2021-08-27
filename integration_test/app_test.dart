@@ -1,51 +1,81 @@
+import 'package:expense_tracker/views/LoginPage.dart';
+import 'package:expense_tracker/views/MainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:expense_tracker/main.dart' as app;
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  group('App Test', () {
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets(
-    'Verifying Login Page functionality by entering correct email, password and then login in',
-    (WidgetTester tester) async {
+    testWidgets(
+        "full-app-testing, from login to adding a new transaction and then finally signing out",
+        (tester) async {
+      // running the app.
       app.main();
+
       await tester.pumpAndSettle();
-      final emailTextField = find.byKey(Key('email'));
-      final passTextField = find.byKey(Key('password'));
-      final loginButton = find.byKey(Key('login'));
-      final addtxbutton = find.byKey(Key('addtxbutton'));
-      final addtxwidget = find.byKey(Key('addtxwidget'));
+      //finding out the location of each widget
+      final emailTextField = find.byType(TextFormField).first;
+      final passTextField = find.byType(TextFormField).last;
+      final Finder loginButton = find.byKey(ValueKey('loginButton'));
 
-      await tester.tap(emailTextField);
+      //entering the email id
       await tester.enterText(emailTextField, 'atharv@cmail.com');
-
-      print('1');
-
+      //matching it against the value entered.
+      //Note: the functionality of the expect method is match the value returned with a matcher
       expect(find.text('atharv@cmail.com'), findsOneWidget);
-      print('2');
 
-      await tester.tap(passTextField);
-      print('3');
+      //Similarly automating password textfield.
+
       await tester.enterText(passTextField, 'atharv');
-      print('4');
-
       expect(find.text('atharv'), findsOneWidget);
-      print('5');
+      await tester.pumpAndSettle();
 
+      //tapping the login button
       await tester.tap(loginButton);
-      print('6');
+      //verify(mockObserver.didPush(any, any));
+      await tester.pumpAndSettle((Duration(seconds: 3)));
 
-      tester.pumpAndSettle();
-      print('7');
+      //if login details are correct, the application moves to the user's main page.
+      expect(find.byType(MainPage), findsOneWidget);
 
-      await tester.tap(addtxbutton);
-      print('8');
-      tester.pumpAndSettle();
-      print('9');
+      // Testing adding Transaction feature.
+      final Finder addtxButton = find.byKey(ValueKey('addtxbutton'));
+      // tapping the add button
+      await tester.tap(addtxButton);
+      await tester.pumpAndSettle((Duration(seconds: 2)));
 
-      expect(find.text('atharv@cmail.com'), findsOneWidget);
-      print('10');
-    },
-  );
+      // if the button is tapped, a dialog box with form is opened.
+      expect(find.byKey(ValueKey('addtxdialog')), findsOneWidget);
+
+      //finding and entering each feild of the form
+
+      final Finder expense = find.byKey(ValueKey('expense'));
+      final Finder category = find.byKey(ValueKey('category'));
+      final Finder amount = find.byKey(ValueKey('amount'));
+      final Finder addexpbutton = find.byKey(ValueKey('addexpbutton'));
+
+      await tester.enterText(category, 'food');
+      await tester.enterText(expense, 'grocery');
+      await tester.enterText(amount, '150');
+
+      await tester.pumpAndSettle();
+
+      //tapping the add expense button to save the data in the database and if successful, the chart are updated and and the expense shows up in the list view
+
+      await tester.tap(addexpbutton);
+      await tester.pumpAndSettle((Duration(seconds: 2)));
+      expect(find.byType(MainPage), findsOneWidget);
+
+      //finding the signout button and signing out
+      final Finder signoutbutton = find.byKey(ValueKey('signout'));
+
+      await tester.tap(signoutbutton);
+      await tester.pumpAndSettle((Duration(seconds: 2)));
+
+      expect(find.byType(LoginPage), findsOneWidget);
+    });
+  });
 }

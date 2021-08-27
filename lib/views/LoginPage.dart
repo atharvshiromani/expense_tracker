@@ -10,11 +10,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _email = '', _password = '';
   final authenticator = Authenticator();
 
-  // TextEditingController _controller = new TextEditingController();
-  // TextEditingController _controller1 = new TextEditingController();
+  TextEditingController _email = new TextEditingController();
+  TextEditingController _password = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,31 +45,23 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20.0),
               Text('Email:'),
-              TextField(
-                key: Key('email'),
+              TextFormField(
+                key: ValueKey('email'),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(hintText: 'Enter Email Address'),
-                onChanged: (value) {
-                  setState(() {
-                    _email = value;
-                  });
-                },
+                controller: _email,
               ),
               SizedBox(height: 10.0),
               Text('Password:'),
-              TextField(
-                key: Key('password'),
+              TextFormField(
+                key: ValueKey('password'),
                 obscureText: true,
                 decoration: InputDecoration(hintText: 'Enter Password'),
-                onChanged: (value) {
-                  setState(() {
-                    _password = value;
-                  });
-                },
+                controller: _password,
               ),
               SizedBox(height: 10.0),
               ElevatedButton(
-                  key: Key('login'),
+                  key: ValueKey('loginButton'),
                   child: Text(
                     'Login',
                   ),
@@ -79,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialStateProperty.all(Color(0xFF0d1b2a))),
                   onPressed: () async {
                     final String res =
-                        await authenticator.signIn(_email, _password);
+                        await authenticator.signIn(_email.text, _password.text);
                     if (res == 'Signed In') {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => MainPage()));
@@ -106,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialStateProperty.all(Color(0xFF0d1b2a))),
                   onPressed: () async {
                     final String res =
-                        await authenticator.signUp(_email, _password);
+                        await authenticator.signUp(_email.text, _password.text);
 
                     if (res == 'Signed Up') {
                       showDialog(

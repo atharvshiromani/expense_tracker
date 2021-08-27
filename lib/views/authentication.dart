@@ -75,7 +75,8 @@ class Authenticator {
         .snapshots();
   }
 
-  Future<void> signOut() async {
+  Future<String> signOut() async {
     await authenticator.signOut();
+    return 'Signed out';
   }
 }

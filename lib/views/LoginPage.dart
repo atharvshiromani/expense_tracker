@@ -1,6 +1,6 @@
 import 'package:expense_tracker/views/MainPage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracker/views/authentication.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -11,7 +11,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String _email = '', _password = '';
-  final authenticator = FirebaseAuth.instance;
+  final authenticator = Authenticator();
 
   // TextEditingController _controller = new TextEditingController();
   // TextEditingController _controller1 = new TextEditingController();
@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 20.0),
               Text('Email:'),
               TextField(
+                key: Key('email'),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(hintText: 'Enter Email Address'),
                 onChanged: (value) {
@@ -58,6 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 10.0),
               Text('Password:'),
               TextField(
+                key: Key('password'),
                 obscureText: true,
                 decoration: InputDecoration(hintText: 'Enter Password'),
                 onChanged: (value) {
@@ -68,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 10.0),
               ElevatedButton(
+                  key: Key('login'),
                   child: Text(
                     'Login',
                   ),
@@ -75,11 +78,21 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor:
                           MaterialStateProperty.all(Color(0xFF0d1b2a))),
                   onPressed: () async {
-                    authenticator.signInWithEmailAndPassword(
-                        email: _email, password: _password);
-
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MainPage()));
+                    final String res =
+                        await authenticator.signIn(_email, _password);
+                    if (res == 'Signed In') {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MainPage()));
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Sign In Failed!'),
+                              content: Text(res),
+                            );
+                          });
+                    }
                   }),
               SizedBox(height: 10.0),
               Container(child: Text('New user ?SignUp')),
@@ -91,12 +104,29 @@ class _LoginPageState extends State<LoginPage> {
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all(Color(0xFF0d1b2a))),
-                  onPressed: () {
-                    authenticator.createUserWithEmailAndPassword(
-                        email: _email, password: _password);
-                    //_SignUpState().AuthenticationHelper().signUp()
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  onPressed: () async {
+                    final String res =
+                        await authenticator.signUp(_email, _password);
+
+                    if (res == 'Signed Up') {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Signed Up Successfully'),
+                              content: Text('Login to continue'),
+                            );
+                          });
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Signed Up Successfully'),
+                              content: Text(res),
+                            );
+                          });
+                    }
                   }),
             ],
           ),

@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:expense_tracker/views/authentication.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:expense_tracker/views/MainPage.dart';
 import 'package:intl/intl.dart';
@@ -17,8 +16,7 @@ class AddTx extends StatefulWidget {
 }
 
 class _AddTxState extends State<AddTx> {
-  final db = FirebaseFirestore.instance;
-  final authenticator = FirebaseAuth.instance;
+  final authenticator = Authenticator();
 
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -51,25 +49,13 @@ class _AddTxState extends State<AddTx> {
                       DatePicker(),
                       TextButton(
                           onPressed: () async {
-                            widget.expense.category = _controller.text;
-                            widget.expcat.category = _controller.text;
-                            widget.expense.expName = _controller2.text;
                             int amt = int.parse(_controller1.text);
-                            widget.expense.expense = amt;
-                            widget.expcat.expense = amt;
-                            widget.expense.day = _DatePickerState.selectedDate;
-                            String uid = authenticator.currentUser!.uid;
-                            await db
-                                .collection('userTxdata')
-                                .doc(uid)
-                                .collection('Transactions')
-                                .add(widget.expense.toJson());
 
-                            await db
-                                .collection('userTxdata')
-                                .doc(uid)
-                                .collection('Category')
-                                .add(widget.expcat.toJson());
+                            await authenticator.addTxtoDB(
+                                _controller.text,
+                                _controller2.text,
+                                amt,
+                                _DatePickerState.selectedDate);
 
                             Navigator.push(
                               context,

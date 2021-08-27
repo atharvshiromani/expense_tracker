@@ -2,6 +2,7 @@
 
 As per the title of the app, its an expense tracking web application and since the app is developed using Flutter,its very easy to deploy on any platform like iOS, Android, Linux.
 # How to run the application
+- Web Application has been deployed on the web usin github pages for easier access of the project : https://atharvshiromani.github.io/#/
 - For Integration/Unit Test , Chromium WebDriver is used, I have Chrome version 92.0+.(m1 mac) the driver for that version is included in the project folder, if the testing browser is different than mine refer website: 
    - https://chromedriver.chromium.org/downloads based on you platform and platform architechture.
    - run chromium driver on port 4444 by going to the directory with chromium driver file is located using the command:

@@ -79,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
+                              key: ValueKey('invalidlogin'),
                               title: Text('Sign In Failed!'),
                               content: Text(res),
                             );
@@ -89,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
               Container(child: Text('New user ?SignUp')),
               SizedBox(height: 10.0),
               ElevatedButton(
+                  key: ValueKey('signup'),
                   child: Text(
                     'SignUp',
                   ),
@@ -104,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
+                              key: ValueKey('signedup'),
                               title: Text('Signed Up Successfully'),
                               content: Text('Login to continue'),
                             );

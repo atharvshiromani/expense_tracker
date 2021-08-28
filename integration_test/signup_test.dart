@@ -24,7 +24,7 @@ void main() {
       //entering the email id
       await tester.enterText(emailTextField, 'atharv@testcmail.com');
       //matching it against the value entered.
-      //Note: the functionality of the expect method is match the value returned with a matcher
+
       expect(find.text('atharv@testcmail.com'), findsOneWidget);
 
       //Similarly automating password textfield.
@@ -33,29 +33,13 @@ void main() {
       expect(find.text('atharv'), findsOneWidget);
       await tester.pumpAndSettle();
 
-      //tapping the login button
+      //tapping the signup button
       await tester.tap(signUpButton);
-      //verify(mockObserver.didPush(any, any));
+
       await tester.pumpAndSettle((Duration(seconds: 2)));
 
-      //if login details are correct, the application moves to the user's main page.
+      //if signup is sucessfull, the application display a dialog box saying Signed Up Successfully.
       expect(find.byKey(ValueKey('signedup')), findsOneWidget);
-
-      await tester.pumpAndSettle();
-
-      await tester.enterText(emailTextField, 'atharv@testcmail.com');
-      //matching it against the value entered.
-      //Note: the functionality of the expect method is match the value returned with a matcher
-      expect(find.text('atharv@testcmail.com'), findsOneWidget);
-
-      //Similarly automating password textfield.
-
-      await tester.enterText(passTextField, 'atharv');
-      expect(find.text('atharv'), findsOneWidget);
-      await tester.pumpAndSettle();
-
-      //tapping the login button
-      await tester.tap(loginButton);
 
       await tester.pumpAndSettle((Duration(seconds: 3)));
       expect(find.byType(MainPage), findsOneWidget);

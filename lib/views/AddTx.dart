@@ -1,10 +1,14 @@
 import 'package:expense_tracker/views/authentication.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:expense_tracker/views/MainPage.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_tracker/classes/expcategory.dart';
+
+final authenticator = FirebaseAuth.instance;
+final auth = Authenticator(authenticator);
 
 class AddTx extends StatefulWidget {
   Expense expense;
@@ -16,8 +20,6 @@ class AddTx extends StatefulWidget {
 }
 
 class _AddTxState extends State<AddTx> {
-  final authenticator = Authenticator();
-
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
   @override
@@ -58,7 +60,7 @@ class _AddTxState extends State<AddTx> {
                           onPressed: () async {
                             int amt = int.parse(_controller1.text);
 
-                            await authenticator.addTxtoDB(
+                            await auth.addTxtoDB(
                                 _controller.text,
                                 _controller2.text,
                                 amt,

@@ -1,6 +1,10 @@
 import 'package:expense_tracker/views/MainPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/views/authentication.dart';
+
+final authenticator = FirebaseAuth.instance;
+final auth = Authenticator(authenticator);
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -10,8 +14,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final authenticator = Authenticator();
-
   TextEditingController _email = new TextEditingController();
   TextEditingController _password = new TextEditingController();
   @override
@@ -70,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialStateProperty.all(Color(0xFF0d1b2a))),
                   onPressed: () async {
                     final String res =
-                        await authenticator.signIn(_email.text, _password.text);
+                        await auth.signIn(_email.text, _password.text);
                     if (res == 'Signed In') {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => MainPage()));
@@ -99,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialStateProperty.all(Color(0xFF0d1b2a))),
                   onPressed: () async {
                     final String res =
-                        await authenticator.signUp(_email.text, _password.text);
+                        await auth.signUp(_email.text, _password.text);
 
                     if (res == 'Signed Up') {
                       showDialog(

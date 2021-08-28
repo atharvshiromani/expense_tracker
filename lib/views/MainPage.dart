@@ -1,6 +1,7 @@
 import 'package:expense_tracker/classes/expcategory.dart';
 import 'package:expense_tracker/views/LoginPage.dart';
 import 'package:expense_tracker/views/authentication.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
@@ -8,7 +9,8 @@ import 'package:expense_tracker/views/AddTx.dart';
 import 'package:expense_tracker/views/ListTx.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-final auth = Authenticator();
+final authenticator = FirebaseAuth.instance;
+final auth = Authenticator(authenticator);
 
 class MainPage extends StatefulWidget {
   @override
@@ -233,10 +235,10 @@ class _Chart1State extends State<Chart1> {
           Map map = {};
           for (var i = 0; i < chartData.length; i++) {
             ExpCategory exp = chartData[i];
-            map.putIfAbsent(exp.category, () => exp.expense);
             if (map.containsKey(exp.category)) {
               map.update(exp.category, (value) => value + exp.expense);
             }
+            map.putIfAbsent(exp.category, () => exp.expense);
           }
           print(map);
           List<ExpCategory> list = [];

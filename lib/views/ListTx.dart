@@ -1,7 +1,11 @@
 import 'package:expense_tracker/views/authentication.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+
+final authenticator = FirebaseAuth.instance;
+final auth = Authenticator(authenticator);
 
 class ListTx extends StatefulWidget {
   @override
@@ -10,7 +14,6 @@ class ListTx extends StatefulWidget {
 
 class _ListTxState extends State<ListTx> {
   final db = FirebaseFirestore.instance;
-  final auth = Authenticator();
 
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
 

@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:expense_tracker/classes/expcategory.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
+
 import 'package:flutter/material.dart';
 
 class Authenticator {
-  final authenticator = FirebaseAuth.instance;
+  final FirebaseAuth authenticator;
   final db = FirebaseFirestore.instance;
 
-  //Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
+  Authenticator(this.authenticator);
+  Stream<User?> get authStateChanges => authenticator.authStateChanges();
 
   Future<String> signIn(String email, String password) async {
     try {

@@ -36,7 +36,7 @@ void main() {
       //tapping the login button
       await tester.tap(loginButton);
       //verify(mockObserver.didPush(any, any));
-      await tester.pumpAndSettle((Duration(seconds: 3)));
+      await tester.pumpAndSettle((Duration(seconds: 2)));
 
       //if login details are correct, the application moves to the user's main page.
       expect(find.byType(MainPage), findsOneWidget);

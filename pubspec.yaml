@@ -39,6 +39,7 @@ dependencies:
   firebase_core: ^1.5.0
   firebase_auth: ^3.0.2
   mockito: ^5.0.15
+  rxdart:
 
 
 dev_dependencies:

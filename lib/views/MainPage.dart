@@ -10,7 +10,8 @@ import 'package:expense_tracker/views/ListTx.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 final authenticator = FirebaseAuth.instance;
-final auth = Authenticator(authenticator);
+final FirebaseFirestore db = FirebaseFirestore.instance;
+final auth = Authenticator(authenticator, db);
 
 class MainPage extends StatefulWidget {
   @override

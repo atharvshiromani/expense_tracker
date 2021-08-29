@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:expense_tracker/classes/expcategory.dart';
 import 'package:expense_tracker/classes/expense_details.dart';
@@ -6,11 +7,20 @@ import 'package:expense_tracker/classes/expense_details.dart';
 import 'package:flutter/material.dart';
 
 class Authenticator {
-  final FirebaseAuth authenticator;
-  final db = FirebaseFirestore.instance;
+  FirebaseAuth authenticator;
+  FirebaseFirestore db;
 
-  Authenticator(this.authenticator);
+  Authenticator(this.authenticator, this.db);
+
   Stream<User?> get authStateChanges => authenticator.authStateChanges();
+
+  Future<User?> getCurrentUser() async {
+    User? currentUser;
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      currentUser = user!;
+    });
+    return currentUser;
+  }
 
   Future<String> signIn(String email, String password) async {
     try {
@@ -47,7 +57,8 @@ class Authenticator {
       String category, String expenseName, int amt, DateTime day) async {
     Expense expense = Expense(category, expenseName, day, amt);
     ExpCategory expcat = ExpCategory(category, amt);
-    String uid = authenticator.currentUser!.uid;
+    String? uid = '';
+    uid = authenticator.currentUser?.uid;
 
     try {
       await db
@@ -78,7 +89,11 @@ class Authenticator {
   }
 
   Future<String> signOut() async {
-    await authenticator.signOut();
-    return 'Signed out';
+    try {
+      await authenticator.signOut();
+      return 'Signed out';
+    } on Exception catch (e) {
+      return "Something went wrong";
+    }
   }
 }

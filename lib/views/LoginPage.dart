@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/views/MainPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/views/authentication.dart';
 
 final authenticator = FirebaseAuth.instance;
-final auth = Authenticator(authenticator);
+final FirebaseFirestore db = FirebaseFirestore.instance;
+final auth = Authenticator(authenticator, db);
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 final authenticator = FirebaseAuth.instance;
-final auth = Authenticator(authenticator);
+final FirebaseFirestore db = FirebaseFirestore.instance;
+final auth = Authenticator(authenticator, db);
 
 class ListTx extends StatefulWidget {
   @override

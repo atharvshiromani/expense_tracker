@@ -2,7 +2,10 @@
 
 As per the title of the app, its an expense tracking web application and since the app is developed using Flutter,its very easy to deploy on any platform like iOS, Android, Linux.
 # How to run the application
-- Web Application has been deployed on the web usin github pages for easier access of the project : https://atharvshiromani.github.io/#/
+- Since this is a flutter application, flutter needs to be installed on the testing hardware, since it might not be the likely scenario the Web Application has been deployed on the web usin github pages for easier access of the project : https://atharvshiromani.github.io/#/
+- For installing Flutter on the device refer: https://flutter.dev/docs/get-started/install
+- For testing purposes, flutter is still need to run the script i have created to run all the integration and test case files. The test script file is: test_script.sh
+- Just in case i am uploading the screenshots of the test_script.sh file to showcase that all tests have passed.
 - For Integration/Unit Test , Chromium WebDriver is used, I have Chrome version 92.0+.(m1 mac) the driver for that version is included in the project folder, if the testing browser is different than mine refer website: 
    - https://chromedriver.chromium.org/downloads based on you platform and platform architechture.
    - run chromium driver on port 4444 by going to the directory with chromium driver file is located using the command:

@@ -1,4 +1,4 @@
-# Expensify- A Minimal Expense Tracking Web Application
+# Expensify- A Minimal Expense Tracking Web Application https://atharvshiromani.github.io/#/
 
 As per the title of the app, its an expense tracking web application and since the app is developed using Flutter,its very easy to deploy on any platform like iOS, Android, Linux.
 # How to run the application

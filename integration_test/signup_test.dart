@@ -24,7 +24,7 @@ void main() {
       await tester.enterText(emailTextField, 'atharv@testcmail.com');
       //matching it against the value entered.
 
-      expect(find.text('atharv@testcmail.com'), findsOneWidget);
+      expect(find.text('atharv@testcmail2.com'), findsOneWidget);
 
       //Similarly automating password textfield.
 

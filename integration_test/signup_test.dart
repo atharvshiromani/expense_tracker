@@ -1,4 +1,4 @@
-import 'package:expense_tracker/views/MainPage.dart';
+import 'package:expense_tracker/views/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -21,10 +21,10 @@ void main() {
       final Finder signUpButton = find.byKey(ValueKey('signup'));
 
       //entering the email id
-      await tester.enterText(emailTextField, 'atharv@testcmail.com');
+      await tester.enterText(emailTextField, 'atharv@testcmail4.com');
       //matching it against the value entered.
 
-      expect(find.text('atharv@testcmail2.com'), findsOneWidget);
+      expect(find.text('atharv@testcmail4.com'), findsOneWidget);
 
       //Similarly automating password textfield.
 
@@ -41,7 +41,7 @@ void main() {
       expect(find.byKey(ValueKey('signedup')), findsOneWidget);
 
       await tester.pumpAndSettle((Duration(seconds: 3)));
-      expect(find.byType(MainPage), findsOneWidget);
+      expect(find.byType(LoginPage), findsOneWidget);
     });
   });
 }

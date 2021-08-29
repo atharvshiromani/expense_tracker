@@ -27,8 +27,8 @@ void main() {
 
       //Similarly automating password textfield.
 
-      await tester.enterText(passTextField, 'atharv');
-      expect(find.text('atharv'), findsOneWidget);
+      await tester.enterText(passTextField, 'atharv1');
+      expect(find.text('atharv1'), findsOneWidget);
       await tester.pumpAndSettle();
 
       //tapping the login button

@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:test/test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
+// For unit test purposes, the corresponding Firebase Auth Mocks and FirebasFirestoneMock has been used used to creates insatnces of both to check the functionality of the aurntication methods such as signin,signout,addTxtoDb.
+
 void main() async {
   setupFirebaseAuthMocks();
   await Firebase.initializeApp();

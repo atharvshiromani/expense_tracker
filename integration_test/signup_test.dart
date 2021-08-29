@@ -19,7 +19,6 @@ void main() {
       final emailTextField = find.byType(TextFormField).first;
       final passTextField = find.byType(TextFormField).last;
       final Finder signUpButton = find.byKey(ValueKey('signup'));
-      final Finder loginButton = find.byKey(ValueKey('loginButton'));
 
       //entering the email id
       await tester.enterText(emailTextField, 'atharv@testcmail.com');

@@ -1,99 +1,51 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:mockito/mockito.dart';
-//
-// class FirebaseAuthMock extends Mock implements FirebaseAuth {};
-//
-// void main() {
-//   group('Unit Tests',(){
-//     test('check login functionality', () async {
-//       final client = MockClient();
-//     });
-//
-//   });
-// }
-
+import 'package:expense_tracker/classes/mock.dart';
 import 'package:expense_tracker/views/authentication.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:todo_app/services/auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:test/test.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
-class MockUser extends Mock implements User {}
+void main() async {
+  setupFirebaseAuthMocks();
+  await Firebase.initializeApp();
 
-final MockUser _mockUser = MockUser();
-
-class MockFirebaseAuth extends Mock implements FirebaseAuth {
-  @override
-  Stream<User> authStateChanges() {
-    return Stream.fromIterable([
-      _mockUser,
-    ]);
-  }
-}
-
-void main() {
-  final MockFirebaseAuth mockFirebaseAuth = MockFirebaseAuth();
-  final Authenticator auth = Authenticator(mockFirebaseAuth);
-  setUp(() {});
-  tearDown(() {});
-
-  test("emit occurs", () async {
-    expectLater(auth.user, emitsInOrder([_mockUser]));
+  test('Returns no user if not signed in', () async {
+    final auth = MockFirebaseAuth();
+    final user = auth.currentUser;
+    expect(user, isNull);
   });
 
-  test("create account", () async {
-    when(
-      mockFirebaseAuth.createUserWithEmailAndPassword(
-          email: "tadas@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) => null);
-
-    expect(await auth.signIn("tadas@gmail.com", "123456"), "Success");
+  // testing the signin functionality
+  test('testing signIn feature of authentication class with email and password',
+      () async {
+    final auth = MockFirebaseAuth();
+    final instance = FakeFirebaseFirestore();
+    final authenticator = Authenticator(auth, instance);
+    final String res =
+        await authenticator.signIn('some email', 'some password');
+    expect(res, "Signed In");
   });
 
-  test("create account exception", () async {
-    when(
-      mockFirebaseAuth.createUserWithEmailAndPassword(
-          email: "tadas@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) =>
-        throw FirebaseAuthException(message: "You screwed up"));
+  test('testing signout function of authentication class', () async {
+    final instance = FakeFirebaseFirestore();
+    final auth = MockFirebaseAuth();
+    final authenticator = Authenticator(auth, instance);
 
-    expect(await auth.signUp("tadas@gmail.com", "123456"), "You screwed up");
+    final String res = await authenticator.signOut();
+    expect(res, 'Signed out');
   });
 
-  test("sign in", () async {
-    when(
-      mockFirebaseAuth.signInWithEmailAndPassword(
-          email: "tadas@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) => null);
+  test(
+      'checking addTxtoDb function of authentication class by upload data to firebase',
+      () async {
+    final instance = FakeFirebaseFirestore();
+    final auth = MockFirebaseAuth();
 
-    expect(await auth.signIn("tadas@gmail.com", "123456"), "Success");
-  });
+    final authenticator = Authenticator(auth, instance);
 
-  test("sign in exception", () async {
-    when(
-      mockFirebaseAuth.signInWithEmailAndPassword(
-          email: "tadas@gmail.com", password: "123456"),
-    ).thenAnswer((realInvocation) =>
-        throw FirebaseAuthException(message: "You screwed up"));
+    final String res =
+        await authenticator.addTxtoDB('food', 'lunch', 123, DateTime.now());
 
-    expect(await auth.signIn("tadas@gmail.com", "123456"), "You screwed up");
-  });
-
-  test("sign out", () async {
-    when(
-      mockFirebaseAuth.signOut(),
-    ).thenAnswer((realInvocation) => null);
-
-    expect(await auth.signOut(), "Success");
-  });
-
-  test("create account exception", () async {
-    when(
-      mockFirebaseAuth.signOut(),
-    ).thenAnswer(
-        (realInvocation) => throw FirebaseAuthException("You screwed up"));
-
-    expect(await auth.signOut(), "You screwed up");
+    expect(res, 'Successful');
   });
 }

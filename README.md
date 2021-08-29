@@ -2,17 +2,18 @@
 
 As per the title of the app, its an expense tracking web application and since the app is developed using Flutter,its very easy to deploy on any platform like iOS, Android, Linux.
 # How to run the application
-- Since this is a flutter application, flutter needs to be installed on the testing hardware, since it might not be the likely scenario, the Exensify Web Application has been deployed on the web using github pages for easier access of the project : https://atharvshiromani.github.io/#/
+- This is a flutter based web application, so, flutter needs to be installed on the testing hardware and the program is executed by going to the project directory in the terminal and using the command: 
+  - flutter run lib/main.dart, 
+- Since it might not be the likely scenario, the Exensify Web Application has been deployed on the web using github pages for easier access of the project : https://atharvshiromani.github.io/#/
 - For installing Flutter on the device refer: https://flutter.dev/docs/get-started/install
-- For testing purposes, flutter is still needed, A script has been  to run all the integration and test case files from one place. The test script file is: test_script.sh
+- For testing purposes, flutter is still needed, A script has been created to run all the integration and test case files from one place. The test script file is named: test_script.sh
 - Just in case, I am uploading the screenshot of the test_script.sh file to showcase that all tests have successfully passed(refer image testfiles.png)
-- For Integration/Unit Test , Chromium WebDriver is used, I have Chrome version 92.0+.(m1 mac) the driver for that version is included in the project folder, if the testing browser is different than mine refer website: 
+- For Integration/Unit Test , Chromium WebDriver is used, Kindly download the web driver based on your browser and platform.
    - https://chromedriver.chromium.org/downloads based on you platform and platform architechture.
-   - run chromium driver on port 4444 by going to the directory with chromium driver file is located using the command:
+   - run chromium driver on port 4444 by going to the directory where chromium driver file is located and using the command:
       - ./chromedriver --port=4444
-   - go the project directory and run the following command: 
-      - for viewing automated test with GUI: flutter drive --driver=test_driver/integration_test_driver.dart --target=integration_test/app_test.dart -d web-server --no-headless 
-      - for Headless Browser : flutter drive --driver=test_driver/integration_test_driver.dart --target=integration_test/app_test.dart -d web-server
+   - find the project directory and execute the script file using commandd: ./test_script.sh
+      
 
 # Functionality Implemented:
 - A Login Page
